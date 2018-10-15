@@ -1,12 +1,12 @@
-let darthVader = new XMLHttpRequest ();
-darthVader.addEventListener('load', function (){ //second
+let darthVader = new XMLHttpRequest();
+darthVader.addEventListener('load', function () {
   const darthVaderObject = JSON.parse(this.responseText)
   document.getElementById('person4Name').innerHTML = darthVaderObject.name;
 })
-darthVader.open('GET', 'https://swapi.co/api/people/4/') //third
-darthVader.send(); //last
+darthVader.open('GET', 'https://swapi.co/api/people/4/')
+darthVader.send();
 
-let darthVaderHome = new XMLHttpRequest ();
+let darthVaderHome = new XMLHttpRequest();
 darthVaderHome.addEventListener('load', function () {
   const dvHome = JSON.parse(this.responseText)
   document.getElementById('person4HomeWorld').innerHTML = dvHome.name;
@@ -15,7 +15,7 @@ darthVaderHome.open('GET', 'https://swapi.co/api/planets/1/')
 darthVaderHome.send();
 
 
-let hanSolo = new XMLHttpRequest ();
+let hanSolo = new XMLHttpRequest();
 hanSolo.addEventListener('load', function () {
   const hanSoloObj = JSON.parse(this.responseText)
   document.getElementById("person14Name").innerHTML = hanSoloObj.name;
@@ -23,7 +23,7 @@ hanSolo.addEventListener('load', function () {
 hanSolo.open("GET", "https://swapi.co/api/people/14/")
 hanSolo.send();
 
-let hanSoloSpec = new XMLHttpRequest ();
+let hanSoloSpec = new XMLHttpRequest();
 hanSoloSpec.addEventListener("load", function () {
   const hanSoloObj = JSON.parse(this.responseText)
   document.getElementById("person14Species").innerHTML = hanSoloObj.name;
@@ -32,30 +32,47 @@ hanSoloSpec.open("GET", "https://swapi.co/api/species/1/")
 hanSoloSpec.send();
 
 
-let allFilms = new XMLHttpRequest();
-allFilms.addEventListener('load', function () {
-  let filmObj = JSON.parse(this.responseText);
-  let filmLiss = document.getElementById('filmList');
+let filmListRequest = new XMLHttpRequest();
+filmListRequest.addEventListener('load', function (res) {
+  console.log('film list object', JSON.parse(res.currentTarget.response))
+  let filmObject = JSON.parse(res.currentTarget.response);
+  let filmListId = document.getElementById('filmList');
+  for (let i = 0; i < JSON.parse(res.currentTarget.response).results.length; i++) {
+    let filmTitleCreateLi = document.createElement('li');
+    filmTitleCreateLi.className = 'film';
+    filmListId.appendChild(filmTitleCreateLi);
 
-  for (let i = 0; i < filmObj.results.length; i++) {
-    let listElements = document.createElement('li');
-    listElements.innerHTML = filmObj.results[i].title;
-    filmLiss.appendChild(listElements);
+    let filmTitleCreateH2 = document.createElement('h2');
+    filmTitleCreateH2.className = 'filmTitle';
+    filmTitleCreateH2.innerHTML = filmObject.results[i].title;
+    filmTitleCreateLi.appendChild(filmTitleCreateH2);
 
-    
-    for (let j = 0; j < filmObj.results[i].planets.length; j++) {
-      const getPlanets = new XMLHttpRequest();
-      getPlanets.open('GET', filmObj.results[i].planets[j]);
-      getPlanets.send();
+    let filmPlanetCreateH3 = document.createElement('h3');
+    filmPlanetCreateH3.innerHTML = 'Planets';
+    filmTitleCreateLi.appendChild(filmPlanetCreateH3);
 
-      getPlanets.addEventListener('load', function () {
-        const planetObj = JSON.parse(this.responseText);
-        let planetElement = document.createElement('ul');
-        planetElement.innerHTML = planetObj.name;
-        listElements.appendChild(planetElement);
+    let filmPlanetsUl = document.createElement('ul');
+    filmPlanetsUl.className = 'filmPlanets';
+    filmTitleCreateLi.appendChild(filmPlanetsUl);
+
+    let filmPlanetsList = document.createElement('li');
+    filmPlanetsList.className = 'planet';
+    filmPlanetsUl.appendChild(filmPlanetsList);
+
+    for (let j = 0; j < filmObject.results[i].planets.length; j++) {
+      let planetListCreateH4 = document.createElement('h4');
+      planetListCreateH4.className = 'planetName';
+      filmPlanetsList.appendChild(planetListCreateH4);
+
+      let newPlanet1 = new XMLHttpRequest();
+      newPlanet1.addEventListener('load', function (res) {
+        planetListCreateH4.innerHTML = JSON.parse(res.currentTarget.response).name;
       })
+
+      newPlanet1.open('GET', filmObject.results[i].planets[j]);
+      newPlanet1.send();
     }
   }
-});
-allFilms.open('GET', 'https://swapi.co/api/films/');
-allFilms.send();
+})
+filmListRequest.open('GET', 'https://swapi.co/api/films');
+filmListRequest.send();
